@@ -17,7 +17,8 @@ struct WindowData
 {
   unsigned long Width, Height;
   unsigned long PortWidth, PortHeight;
-  double XMin, XMax, YMin, YMax;
+  double XMinA, XMaxA, YMinA, YMaxA;
+  double XMinB, XMaxB, YMinB, YMaxB;
 };
 
 struct puntil {
@@ -145,39 +146,74 @@ puntil puntilIdentidad(puntil p){
 // -------------------------------------------------------------------------
 void SpecialKeyboardCbk( int key, int x, int y )
 {
+	cout<<x<<" "<<y<<endl;
+	cout<<winData.Width/2 - winData.PortWidth<<endl;
+    unsigned long heightDif = (winData.Height-winData.PortHeight)/2;
+	if(x > winData.Width/2 - winData.PortWidth && x <  winData.Width/2 && y > heightDif && y < heightDif+winData.PortHeight){
+	 	switch(key){
+			case GLUT_KEY_RIGHT:
+				if(winData.XMaxA <= 480){
+					winData.XMinA+=1;
+					winData.XMaxA+=1;
+				}
+				break;
+			  
+			case GLUT_KEY_LEFT:
+				if (winData.XMinA >0){
+					winData.XMinA-=1;
+					winData.XMaxA-=1;
+				} 
+				break;
+			case GLUT_KEY_UP:
+				if (winData.YMaxA < 360){
+					winData.YMinA+=1;
+					winData.YMaxA+=1;
+				}
+				break;
+			case GLUT_KEY_DOWN:
+				if (winData.YMinA > 0){
+					winData.YMinA-=1;
+					winData.YMaxA-=1;
+				}
+				break;
+			case GLUT_KEY_END:
+			  	quick_exit(0);
 
-  switch(key){
-    
-    case GLUT_KEY_RIGHT:
-      if(winData.XMax <= 480){
-        winData.XMin+=1;
-        winData.XMax+=1;
-      }
-      break;
-      
-    case GLUT_KEY_LEFT:
-      if (winData.XMin >0){
-        winData.XMin-=1;
-        winData.XMax-=1;
-      } 
-        break;
-    case GLUT_KEY_UP:
-      if (winData.YMax < 360){
-        winData.YMin+=1;
-        winData.YMax+=1;
-      }
-        break;
-    case GLUT_KEY_DOWN:
-      if (winData.YMin > 0){
-        winData.YMin-=1;
-        winData.YMax-=1;
-      }
-        break;
-    case GLUT_KEY_END:
-      quick_exit(0);
+		}
+	}
+	else if(x > winData.Width/2 && x <  winData.Width/2 + winData.PortWidth && y > heightDif && y < heightDif+winData.PortHeight){
+	 	switch(key){
+			case GLUT_KEY_RIGHT:
+				if(winData.XMaxB <= 480){
+					winData.XMinB+=1;
+					winData.XMaxB+=1;
+				}
+				break;
+			  
+			case GLUT_KEY_LEFT:
+				if (winData.XMinB >0){
+					winData.XMinB-=1;
+					winData.XMaxB-=1;
+				} 
+				break;
+			case GLUT_KEY_UP:
+				if (winData.YMaxB < 360){
+					winData.YMinB+=1;
+					winData.YMaxB+=1;
+				}
+				break;
+			case GLUT_KEY_DOWN:
+				if (winData.YMinB > 0){
+					winData.YMinB-=1;
+					winData.YMaxB-=1;
+				}
+				break;
+			case GLUT_KEY_END:
+			  	quick_exit(0);
 
-  }
-  glutPostRedisplay();
+		}
+	}
+	glutPostRedisplay();
 }
 
 
@@ -186,10 +222,15 @@ void SpecialKeyboardCbk( int key, int x, int y )
 void myInit (void) {  
     glEnable( GL_POINT_SMOOTH );
     glClearColor(1.0,1.0,1.0,1.0); 
-    winData.XMin = 0;
-    winData.YMin = 0;
-    winData.XMax = 480 / 2;
-    winData.YMax = 320 / 2;
+    winData.XMinA = 0;
+    winData.YMinA = 0;
+    winData.XMaxA = 480 / 2;
+    winData.YMaxA = 320 / 2;
+    
+    winData.XMinB = 0;
+    winData.YMinB = 0;
+    winData.XMaxB = 480 / 2;
+    winData.YMaxB = 320 / 2;
     }
 
 void dispPainter(puntil (*mod)(puntil) ){
@@ -231,7 +272,7 @@ void myDisplay (void) {
     unsigned long heightDif = (winData.Height-winData.PortHeight)/2;
     
     glViewport(winData.Width/2 - winData.PortWidth, heightDif, winData.PortWidth, winData.PortHeight); 
-    gluOrtho2D(winData.XMin ,winData.XMax, winData.YMin, winData.YMax);    
+    gluOrtho2D(winData.XMinA ,winData.XMaxA, winData.YMinA, winData.YMaxA);    
     glMatrixMode( GL_MODELVIEW );
     
     dispPainter(puntilIdentidad);
@@ -239,7 +280,7 @@ void myDisplay (void) {
     glMatrixMode(GL_PROJECTION); 
     glLoadIdentity();
     glViewport(winData.Width/2, heightDif, winData.PortWidth, winData.PortHeight); 
-    gluOrtho2D(winData.XMin ,winData.XMax, winData.YMin, winData.YMax);    
+    gluOrtho2D(winData.XMinB ,winData.XMaxB, winData.YMinB, winData.YMaxB);    
     glMatrixMode( GL_MODELVIEW );
     
     dispPainter(negativecol);
