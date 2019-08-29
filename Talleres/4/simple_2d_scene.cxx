@@ -1,6 +1,6 @@
 /* -------------------------------------------------------------------------
  * @brief Example on how to draw simple 2D shapes
- * @author Leonardo Flórez-Valencia (florez-l@javeriana.edu.co)
+ * @author Leonardo Flï¿½rez-Valencia (florez-l@javeriana.edu.co)
  * -------------------------------------------------------------------------
  * Compilation on linux:
  *
@@ -66,7 +66,7 @@ void DrawTriangle( GLenum mode )
 }
 
 //--------------------------------------------------------------------------
-void ptnScaleRotate ( float tx, float ty, float sx, float sy, int r, int g, int b, char tp){
+void drawScaleTranslate ( float tx, float ty, float sx, float sy, int r, int g, int b, char tp){
 	glLoadIdentity();
 	glColor3ub( r, g, b );
 	glTranslatef(tx,ty,0);
@@ -146,28 +146,28 @@ void DisplayCbk( )
   	char s = 's', c = 'c', t='t';
 
   	//CASA
-	ptnScaleRotate( 500, 165, 210, 310, 255, 255, 255, s); 	//Bloque casa
-	ptnScaleRotate( 500, 399, 530, 180, 255, 255, 255, t);	//Techo
+	drawScaleTranslate( 500, 165, 210, 310, 255, 255, 255, s); 	//Bloque casa
+	drawScaleTranslate( 500, 399, 530, 180, 255, 255, 255, t);	//Techo
 
 	//PAVIMENTO
-	ptnScaleRotate( 200, 25, 340, 30, 255, 255, 255, s);	//Pavimento
+	drawScaleTranslate( 200, 25, 340, 30, 255, 255, 255, s);	//Pavimento
 
 	//CAMION
-	ptnScaleRotate( 145, 120, 170, 100, 255, 255, 255, s);	//Cuerpo camion
-	ptnScaleRotate( 265, 95, 70, 50, 255, 255, 255, s);		//Cabeza camion
-	ptnScaleRotate( 90, 55, 15, 15, 255, 255, 255, c);		//Rueda trasera
-	ptnScaleRotate( 200, 55, 15, 15, 255, 255, 255, c);		//Rueda delantera
+	drawScaleTranslate( 145, 120, 170, 100, 255, 255, 255, s);	//Cuerpo camion
+	drawScaleTranslate( 265, 95, 70, 50, 255, 255, 255, s);		//Cabeza camion
+	drawScaleTranslate( 90, 55, 15, 15, 255, 255, 255, c);		//Rueda trasera
+	drawScaleTranslate( 200, 55, 15, 15, 255, 255, 255, c);		//Rueda delantera
 
 	//ARBOL
-	ptnScaleRotate( 850, 90, 100, 160, 100, 80, 10, s);		//Tronco arbol
-	ptnScaleRotate( 850, 225, 190, 130, 0, 153, 0, t);		//Copa 1
-	ptnScaleRotate( 850, 255, 190, 130, 0, 153, 0, t);		//Copa 2
-	ptnScaleRotate( 850, 285, 190, 130, 0, 153, 0, t);		//Copa 3
+	drawScaleTranslate( 850, 90, 100, 160, 100, 80, 10, s);		//Tronco arbol
+	drawScaleTranslate( 850, 225, 190, 130, 0, 153, 0, t);		//Copa 1
+	drawScaleTranslate( 850, 255, 190, 130, 0, 153, 0, t);		//Copa 2
+	drawScaleTranslate( 850, 285, 190, 130, 0, 153, 0, t);		//Copa 3
 
   /*
 
-	ptnScaleRotate( , , , , 1, 1, 1, t);
-	ptnScaleRotate( , , , , 1, 1, 1, t);
+	drawScaleTranslate( , , , , 1, 1, 1, t);
+	drawScaleTranslate( , , , , 1, 1, 1, t);
 
 	*/
   // Finish
@@ -180,7 +180,9 @@ int main( int argc, char* argv[] )
   glutInit( &argc, argv );
   glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB );
   glutInitWindowPosition( 50, 50 );
-  glutInitWindowSize( 1000, 1000 );
+  int isws;//init square win size
+  isws = (argc>1) ? atoi(argv[1]):1000;
+  glutInitWindowSize( isws, isws );
   glutCreateWindow( "2D test!!!" );
   glutDisplayFunc( DisplayCbk );
   glutReshapeFunc( ResizeCbk );
