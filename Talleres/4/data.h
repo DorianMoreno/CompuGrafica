@@ -36,10 +36,10 @@ DtColour colour;
 float bot,top,left,right;//\in (0,1) how much space of the element it takes
 //as in if the prim is in a 0,1 square where does this element start/end
 
-void calcCoords(DtCoord lb,DtCoord rt){ //left bottom ; right top
-float dx = rt.x - lb.x, dy =rt.y - rt.y;
-pIni.x = lb.x+dx*bot  ; pIni.y = lb.y + dy*left;
-pEnd.x = lb.x+dx*top ; pEnd.y = lb.y + dy*right;
+void calcCoords(DtCoord lb,DtCoord del){ //left bottom ; delta as in dx,dy
+
+pIni.x = lb.x+del.x*bot  ; pIni.y = lb.y + del.y*left;
+pEnd.x = lb.x+del.x*top ; pEnd.y = lb.y + del.y*right;
 }
 
 Component(){
@@ -53,12 +53,22 @@ Component(std::string name){
     DtColour col;
     colour = col;
 }
-Component( float b, float t, float l, float r , DtColour col , std::string name){
-    bot = b , top = t , left = l, right = r , colour = col, this->name = name;
+Component( float b, float t, float l, float r , DtColour col , std::string name, char type){
+    bot = b , top = t , left = l, right = r , colour = col, this->name = name, this->type = type;
 }
 
 bool operator<(const Component& oth){
     return this->name < oth.name;
+}
+
+void draw(DtCoord lb,DtCoord del, DtColour col = DtColour(-1,-1,-1) ){
+    calcCoords(lb,del);
+    if (col.r == -1 ){
+        col = this->colour;//should be defColour but w/e
+    }
+                            //perhaps should be half instead of left bottom(?)
+        drawScaleTranslate(pIni.x, pIni.y, del.x, del.y, col, type);
+    
 }
 
 };
@@ -77,9 +87,12 @@ struct Prim{
 
         std::sort(ColData.begin(), ColData.end(), /*lambda start */
             [] (pairNC f, pairNC s){ return (f.first) < (s.first); } /*lambda end */);
-        std::vector<pairNC>::iterator colIt = ColData.begin();
+
+        std::vector<pairNC>::iterator pairNCIt = ColData.begin();
+
         for (auto compIt: components)
         {
+            if()
             compIt.draw();
             
         }
@@ -104,6 +117,7 @@ void DrawCircle( GLenum mode, unsigned int samples );
 void DrawSquare( GLenum mode );
 void DrawTriangle( GLenum mode );
 void drawScaleTranslate ( float tx, float ty, float sx, float sy, int r, int g, int b, char tp);
+void drawScaleTranslate ( float tx, float ty, float sx, float sy, DtColour col, char tp); //needs impl
 void DrawBase( );
 void Init( );
 void ResizeCbk( int width, int height );
