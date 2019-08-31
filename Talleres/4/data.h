@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 struct DtCoord{
     float x,y;
@@ -25,13 +26,24 @@ void calcCoords(DtCoord lb,DtCoord rt){ //left bottom ; right top
 float dx = rt.x - lb.x, dy =rt.y - rt.y;
 pIni.x = lb.x+dx*low  ; pIni.y = lb.y + dy*left;
 pEnd.x = lb.x+dx*high ; pEnd.y = lb.y + dy*right;
+
+Componen()
 }
 
 
 struct Prim{
-
-
+    std::vector<Component> components
 };
+
+//two ways to do this, min, max -> (init, dx , dy)
+void defineTree(){//DtCoord min, DtCoord max,DtColour colCopa, DtColour colTrunk){
+    Prim tree;
+    tree.addcomp();
+    //...
+    // -> luego tree.draw();
+
+}
+
 
 void DrawCircle( GLenum mode, unsigned int samples );
 void DrawSquare( GLenum mode );
