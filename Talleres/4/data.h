@@ -27,7 +27,6 @@ pIni.x = lb.x+dx*low  ; pIni.y = lb.y + dy*left;
 pEnd.x = lb.x+dx*high ; pEnd.y = lb.y + dy*right;
 }
 
-};
 
 struct Prim{
 
