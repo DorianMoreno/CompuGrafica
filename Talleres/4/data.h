@@ -12,16 +12,21 @@ struct DtColour{
     //and 0<=r,g,b,<=255
 };
 
-struct Element{
+//struct Element{
+struct Component{
+
 char type; // s,c,t >> square, circle,triangle
 DtColour colour;
-DtCoord pIni,pEnd;//as in the square in which the shape fits
-};
+DtCoord pIni,pEnd;//as in the coords of the rectangle in which the shape fits
+float low,high,left,right;//\in (0,1) how much space of the element it takes
+//as in if the prim is in a 0,1 square where does this element start/end
 
-struct Component{
-Element element;
+void calcCoords(DtCoord lb,DtCoord rt){ //left bottom ; right top
+float dx = rt.x - lb.x, dy =rt.y - rt.y;
+pIni.x = lb.x+dx*low  ; pIni.y = lb.y + dy*left;
+pEnd.x = lb.x+dx*high ; pEnd.y = lb.y + dy*right;
+}
 
-};
 
 struct Prim{
 
