@@ -273,6 +273,7 @@ void DisplayCbk( )
 	drawRoad(0, 300, 1000, 20, color(0.2, 0.2, 0.2));
 	
 	drawTruckHeightRatio(100, 100, 160, 2.0, color(0, 0, 0.4), color(0, 0, 0));
+	drawTruckHeightRatio(300, 320, 50, 1.0, color(0.7, 0, 0), color(0, 0, 0));
 	drawTruckHeightRatio(50, 20, 180, 1.0, color(1, 1, 1), color(0, 0, 0));
 	
 	// Finish
