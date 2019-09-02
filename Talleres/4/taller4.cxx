@@ -4,7 +4,7 @@
  * -------------------------------------------------------------------------
  * Compilation on linux:
  *
- * g++ -std=c++17 simple_2d_scene.cxx -lm -lGL -lGLU -lglut -o mySimple2DScene
+ * g++ -std=c++17 taller4.cxx -lm -lGL -lGLU -lglut -o taller4
  *
  * -------------------------------------------------------------------------
  */
@@ -289,7 +289,7 @@ int main( int argc, char* argv[] )
   int isws;//init square win size
   isws = (argc>1) ? atoi(argv[1]):1000;
   glutInitWindowSize( isws, isws );
-  glutCreateWindow( "2D test!!!" );
+  glutCreateWindow( "2D scene!!!" );
   glutDisplayFunc( DisplayCbk );
   glutReshapeFunc( ResizeCbk );
   Init( );
