@@ -13,19 +13,18 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
-//#include "data.h"
 
 struct color
 {
 	float r;
 	float g;
 	float b;
-	
+
 	color()
 	{
 		this->r = this->g = this->b = 1.0;
 	}
-	
+
 	color(float r, float g, float b)
 	{
 		this->r = r;
@@ -106,7 +105,7 @@ void drawScaleTranslate( float tx, float ty, float sx, float sy, float r, float 
 //--------------------------------------------------------------------------
 
 void drawTruck(float posX, float posY, float width, float height, color body, color wheels)
-{	
+{
 	//TRUCK
 	drawScaleTranslate(0.35416666666*width + posX,  0.69565217391*height + posY, 0.70833333333*width, 0.86956521739*height,   body.r,   body.g,   body.b, 's');		//Cargo
 	drawScaleTranslate(0.85416666666*width + posX,  0.47826086956*height + posY, 0.29166666666*width, 0.43478260869*height,   body.r,   body.g,   body.b, 's');		//Cabin
@@ -129,14 +128,14 @@ void drawTruckHeightRatio(float posX, float posY, float height, float sizeRatio,
 //--------------------------------------------------------------------------
 
 void drawRoad(float posX, float posY, float width, float height, color asphalt)
-{	
+{
 	//ROAD
 	drawScaleTranslate(0.5*width + posX, 0.5*height + posY, width, height, asphalt.r, asphalt.g, asphalt.b, 's');	//Road
 }
 //--------------------------------------------------------------------------
 
 void drawHouse(float posX, float posY, float width, float height, color structure, color roof)
-{	
+{
   	//HOUSE
 	drawScaleTranslate(0.5*width+posX, 0.33270043502*height+posY, 0.49056603773*width, 0.66540087004*height, structure.r, structure.g, structure.b, 's'); 	//Structure
 	drawScaleTranslate(0.5*width+posX, 0.83270043502*height+posY,               width,  0.3863617955*height,      roof.r,      roof.g,      roof.b, 't');		//Roof
@@ -157,7 +156,7 @@ void drawHouseHeightRatio(float posX, float posY, float height, float sizeRatio,
 //--------------------------------------------------------------------------
 
 void drawTree(float posX, float posY, float width, float height, color trunk, color leafs)
-{	
+{
 	//TREE
 	drawScaleTranslate( 0.5*width + posX, 0.22394030468*height + posY, 0.52631578947*width, 0.44788060937*height, trunk.r, trunk.g, trunk.b, 's');			//Trunk
 	drawScaleTranslate( 0.5*width + posX, 0.62796588839*height + posY,               width, 0.41588913727*height, leafs.r, leafs.g, leafs.b, 't');		//Leaf 1
@@ -238,13 +237,13 @@ void DisplayCbk( )
 	 glScale[f/d]( sx, sy, 1 );
 	 glRotate[f/d]( theta, 0, 0, 1 );
 	*/
-	
+
 	drawRoad(0, 0, 1000, 1000, color(0, 0.6, 1));
 	drawRoad(0, 0, 1000, 300, color(0.4, 0.4, 0.4));
-	
+
 	drawHouseWidthRatio(400, 300, 400, 1.5, color( 0.9, 0.9, 0), color(0.3, 0.2, 0.1));
 	drawHouseWidthRatio(-100, 300, 400, 1.2, color(), color(0.75, 0.3, 0));
-	
+
 	drawTreeWidthRatio(  0, 300, 100, 2.3, color(0.25546875, 0.103125, 0.00640625), color(0, 0.45, 0));
 	drawTreeWidthRatio(100, 300, 100, 2.3, color(0.25546875, 0.103125, 0.00640625), color(0, 0.45, 0));
 	drawTreeWidthRatio(200, 300, 100, 2.3, color(0.25546875, 0.103125, 0.00640625), color(0, 0.45, 0));
@@ -267,15 +266,14 @@ void DisplayCbk( )
 	drawTreeWidthRatio(750, 300, 100, 2.0, color(0.35546875, 0.203125, 0.06640625), color(0, 0.6, 0));
 	drawTreeWidthRatio(850, 300, 100, 2.0, color(0.35546875, 0.203125, 0.06640625), color(0, 0.6, 0));
 	drawTreeWidthRatio(950, 300, 100, 2.0, color(0.35546875, 0.203125, 0.06640625), color(0, 0.6, 0));
-	
-	
+
 	drawHouseHeightRatio(600, 300, 400, 1.0, color(0.4, 0.5, 0.6), color(0.6, 0.3, 0.2));
 	drawRoad(0, 300, 1000, 20, color(0.2, 0.2, 0.2));
-	
+
 	drawTruckHeightRatio(100, 100, 160, 2.0, color(0, 0, 0.4), color(0, 0, 0));
 	drawTruckHeightRatio(300, 320, 50, 1.0, color(0.7, 0, 0), color(0, 0, 0));
 	drawTruckHeightRatio(50, 20, 180, 1.0, color(1, 1, 1), color(0, 0, 0));
-	
+
 	// Finish
 	glutSwapBuffers( );
 }
