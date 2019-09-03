@@ -73,7 +73,7 @@ class Polyhedron{
 		void scale(const float &sx, const float &sy, const float &sz);
 		void rotate(const float &angle, const float &rx, const float &ry, const float &rz);
 		void setTranslation(const float &tx, const float &ty, const float &tz);
-		void setScaling(const float &sx, const float &sy, const float &sz);
+		void setEscalation(const float &sx, const float &sy, const float &sz);
 		void setRotation(const float &angle, const float &rx, const float &ry, const float &rz);
 };
 
@@ -125,7 +125,7 @@ class Polyhedra{
 		void scaleAll(const float &sx, const float &sy, const float &sz);
 		void rotateAll(const float &angle, const float &rx, const float &ry, const float &rz);
 		void setTranslationAll(const float &tx, const float &ty, const float &tz);
-		void setScalingAll(const float &sx, const float &sy, const float &sz);
+		void setEscalationAll(const float &sx, const float &sy, const float &sz);
 		void setRotationAll(const float &angle, const float &rx, const float &ry, const float &rz);
 		
 		void render(const std::string &name);
@@ -133,7 +133,7 @@ class Polyhedra{
 		void scale(const std::string name, const float &sx, const float &sy, const float &sz);
 		void rotate(const std::string name, const float &angle, const float &rx, const float &ry, const float &rz);
 		void setTranslation(const std::string name, const float &tx, const float &ty, const float &tz);
-		void setScaling(const std::string name, const float &sx, const float &sy, const float &sz);
+		void setEscalation(const std::string name, const float &sx, const float &sy, const float &sz);
 		void setRotation(const std::string name, const float &angle, const float &rx, const float &ry, const float &rz);
 		
 		virtual ~Polyhedra();

@@ -203,7 +203,7 @@ void Polyhedron::setTranslation(const float &tx, const float &ty, const float &t
 	this->tz = tz;
 }
 
-void Polyhedron::setScaling(const float &sx, const float &sy, const float &sz){
+void Polyhedron::setEscalation(const float &sx, const float &sy, const float &sz){
 	this->sx = sx;
 	this->sy = sy;
 	this->sz = sz;
@@ -543,10 +543,10 @@ void Polyhedra::setTranslationAll(const float &tx, const float &ty, const float 
 		it->second->setTranslation(tx, ty, tz);
 }
 
-void Polyhedra::setScalingAll(const float &sx, const float &sy, const float &sz){
+void Polyhedra::setEscalationAll(const float &sx, const float &sy, const float &sz){
 	std::unordered_map<std::string,Polyhedron*>::iterator it;
 	for(it = poly.begin() ; it!=poly.end() ; it++)
-		it->second->setScaling(sx, sy, sz);
+		it->second->setEscalation(sx, sy, sz);
 }
 
 void Polyhedra::setRotationAll(const float &angle, const float &rx, const float &ry, const float &rz){
@@ -575,8 +575,8 @@ void Polyhedra::setTranslation(const std::string name, const float &tx, const fl
 	poly[name]->setTranslation(tx, ty, tz);
 }
 
-void Polyhedra::setScaling(const std::string name, const float &sx, const float &sy, const float &sz){
-	poly[name]->setScaling(sx, sy, sz);
+void Polyhedra::setEscalation(const std::string name, const float &sx, const float &sy, const float &sz){
+	poly[name]->setEscalation(sx, sy, sz);
 }
 
 void Polyhedra::setRotation(const std::string name, const float &angle, const float &rx, const float &ry, const float &rz){

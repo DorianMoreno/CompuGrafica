@@ -38,19 +38,19 @@ void Init( )
 {
 	glClearColor( 0.7, 0.7, 0.7, 0.0 );
 	poly.addPolyhedron("Cub", new Cube());
-	poly.setScaling("Cub", 1.5, 1.5, 1.5);
+	poly.setEscalation("Cub", 1.5, 1.5, 1.5);
 	poly.setTranslation("Cub", 0, -2.0, 0);
 	
 	poly.addPolyhedron("Oct", new Octahedron());
-	poly.setScaling("Oct", 1.5, 1.5, 1.5);
+	poly.setEscalation("Oct", 1.5, 1.5, 1.5);
 	poly.setTranslation("Oct", 2.0, 0, 0);
 	
 	poly.addPolyhedron("Tet", new Tetrahedron());
-	poly.setScaling("Tet", 1.5, 1.5, 1.5);
+	poly.setEscalation("Tet", 1.5, 1.5, 1.5);
 	poly.setTranslation("Tet", -2.0, 0, 0);
 	
 	poly.addPolyhedron("TPr", new TPrism());
-	poly.setScaling("TPr", 1.5, 1.5, 1.5);
+	poly.setEscalation("TPr", 1.5, 1.5, 1.5);
 	poly.setTranslation("TPr", 0, 2.0, 0);
 }
 
