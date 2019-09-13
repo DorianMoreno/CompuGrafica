@@ -13,6 +13,7 @@
 #define RATIO 		 1
 // -------------------------------------------------------------------------
 Polyhedra poly;
+CelestialObject CelObj;
 // -------------------------------------------------------------------------
 
 void SpecialKeyboardCbk( int key, int x, int y)
@@ -52,6 +53,13 @@ void Init( )
 	poly.addPolyhedron("TPr", new TPrism());
 	poly.setEscalation("TPr", 1.5, 1.5, 1.5);
 	poly.setTranslation("TPr", 0, 2.0, 0);
+
+	CelObj.setBody( new Cube() );
+	CelObj.setPath( CelObj.ellipticOrbit(1,2,Vector(0,0,-1)) );
+	Point COcenter= Point(0.5,0.5,0.5);
+	CelObj.setCenter(COcenter);
+
+
 }
 
 // -------------------------------------------------------------------------
@@ -87,7 +95,7 @@ void DisplayCbk( )
 	//~ glPopMatrix();
 	
 	poly.renderAll();
-
+	CelObj.renderCO();
 	// Finish
 	glPopMatrix();
 	glutSwapBuffers( );
