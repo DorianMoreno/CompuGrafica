@@ -34,6 +34,16 @@ Point::Point(const float &x, const float &y, const float &z){
 	this->pos[2] = z;
 }
 
+/*Point::Point(Quaternion qu){
+	this->pos[0] = qu.x;
+	this->pos[1] = qu.y;
+	this->pos[2] = qu.z;
+}*/
+
+float Point::operator()(const int &coord){
+	return pos[coord];
+}
+
 // -------------------------------------------------------------------------
 
 Color::Color(){
@@ -92,6 +102,28 @@ void Vector::setVector(const float &x, const float &y, const float &z)
 	this->z = z;
 	normalize();
 }
+
+
+bool Vector::operator==(const Vector &vec){
+	return this->x == vec.x && this->y == vec.y && this->z == vec.z;
+}
+
+float Vector::dot(const Vector vec){
+	return	this->x * vec.x + 
+			this->y * vec.y + 
+			this->z * vec.z;
+}
+
+Vector Vector::unitcross(const Vector vec){
+	Vector v;
+	v.setVector(
+		this->y * vec.z - this->z * vec.y,//x
+		this->z * vec.x - this->x * vec.z,//y
+		this->x * vec.y - this->y * vec.z//z
+		);
+	return v;
+}
+
 
 // -------------------------------------------------------------------------
 	
@@ -586,5 +618,148 @@ void Polyhedra::setRotation(const std::string name, const float &angle, const fl
 Polyhedra::~Polyhedra(){
 	poly.clear();
 }
+
+//CelObj---------------------------------------------------------------
+
+CelestialObject::CelestialObject(){ }
+
+CelestialObject::CelestialObject(Polyhedron *cBody, float cx , float cy , float cz){
+	this->CelestialBody = cBody;
+	this->center = Point(cx,cy,cz);
+}
+CelestialObject::CelestialObject(Polyhedron *cBody, std::vector<Point> path){
+	this->CelestialBody = cBody;
+	this->path = path;
+}
+
+//CO funcs------------
+void CelestialObject::addSatellite(std::string name, CelestialObject *CelObjct){
+	Satellites[name] = CelObjct;
+}
+
+void CelestialObject::renderCO(){
+	renderBody();
+	renderPath();
+	Point actPos(this->path[0](0) + this->center(0), this->path[0](1) + this->center(1), this->path[0](2) + this->center(2));
+	for(auto var : Satellites)
+	{
+		var.second->setCenter(actPos);
+		var.second->renderCO();
+	}
+}
+
+//Body funcs--------------
+void CelestialObject::setBody(Polyhedron* pol){
+	this->CelestialBody = pol;
+}
+void CelestialObject::setBdEscl(const float &sx, const float &sy, const float &sz){
+	this->CelestialBody->setEscalation(sx,sy,sz);
+}
+void CelestialObject::setBdTrns(const float &tx, const float &ty, const float &tz){
+	this->CelestialBody->setTranslation(tx,ty,tz);
+}
+void CelestialObject::setCenter(const Point center){
+	this->center.pos[0] = center.pos[0];
+	this->center.pos[1] = center.pos[1];
+	this->center.pos[2] = center.pos[2];
+}
+
+void CelestialObject::setPath(const std::vector<Point> &path){
+	this->path = path;
+}
+
+void CelestialObject::renderPath(/*colour data */){//should add colour eventually
+	//glPushMatrix();
+	//glLoadIdentity();
+	//glTranslatef(center(0),center(1),center(2));
+	
+	glPopMatrix();
+	glPushMatrix();
+	
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0,1,0.5);
+	for(auto pIt : this->path)
+	{
+		glVertex3f (
+			pIt(0)+center(0),
+			pIt(1)+center(1),
+			pIt(2)+center(2));
+
+	}
+	glEnd();
+	std::cout<<center(0)<<" "<<center(1)<<" "<<center(2)<<std::endl;
+		//glmat
+	//glPopMatrix();
+}
+
+void CelestialObject::renderBody(){
+    glPopMatrix();
+    glPushMatrix();
+	CelestialBody-> setTranslation(
+		path[0](0) +center(0),
+		path[0](1) +center(1),
+		path[0](2) +center(2));
+	CelestialBody->render();
+}
+std::vector<Point> CelestialObject::ellipticOrbit(
+	const float &w,const float &h, Vector normv, const int &samples ){
+	std::vector<Quaternion> qPath;
+	std::vector<Point> ellPath;
+	for( unsigned int i = 0; i < samples; ++i )
+  	{
+    	float t = _2PI * float( i ) / float( samples );
+		Quaternion np (w * std::cos( t ), h * std::sin( t ), 0 ,0);
+		qPath.push_back(np);
+  	}
+	//note normal to plane is (0,0,1)
+	Vector Normalxy;
+	Normalxy.setVector(0,0,1);
+	//we want normal from (0,0,1) = a to Normv = b
+	//axis = a x b
+	//angle = arccos (a.b / ||a|| *||b||)
+	//quat rotation 
+	//profit
+	if( ( normv == Normalxy) ){
+
+	}
+	Vector axis = Normalxy.unitcross( normv );
+	float angle = acos ( Normalxy.dot( normv ) );
+	// ||a|| = ||b|| = 1
+
+	Quaternion qrot(axis,angle);
+	Quaternion conj = qrot.getConjugate();
+
+	/* Lambda exp multi not sure if would work. ..
+	[qrot, conj, ellPath] (auto q){
+		Point np (qrot*q*conj);
+		ellPath.push_back(np);
+	} */
+	//try to control parallel vects
+	if( ( normv == Normalxy) ){
+		for(auto qp : qPath)
+			ellPath.push_back(Point(qp.x,qp.y,qp.z));
+	}else{
+	if( ( normv == Vector(0,0,-1)) ){
+		for(auto qp : qPath)
+			ellPath.push_back(Point(qp.x,qp.y,-qp.z));
+	}else{
+	
+	for(auto qp : qPath){
+		qp = qrot * qp * conj;//will this work?
+		ellPath.push_back(Point(qp.x,qp.y,qp.z));
+	}
+
+	}
+
+	}
+	/*[](float a, float b) {
+            return (std::abs(a) < std::abs(b));
+        } */
+
+	return ellPath;
+}
+
+//Satellite funcs------------
+
 
 #endif //__POLYHEDRA__HXX__

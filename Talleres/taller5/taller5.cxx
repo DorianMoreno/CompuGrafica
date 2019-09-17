@@ -1,8 +1,17 @@
+/* -------------------------------------------------------------------------
+  Compilation on linux:
+ 
+  g++ -std=c++17 taller5.cxx -lm -lGL -lGLU -lglut -o taller5
+ 
+   -------------------------------------------------------------------------
+ */
+
 #include <GL/glut.h>
 #include <cmath>
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <vector>
 #include "polyhedra.h"
 
 // -------------------------------------------------------------------------
@@ -13,6 +22,7 @@
 #define RATIO 		 1
 // -------------------------------------------------------------------------
 Polyhedra poly;
+std::vector<CelestialObject*> objs;
 // -------------------------------------------------------------------------
 
 void SpecialKeyboardCbk( int key, int x, int y)
@@ -52,6 +62,80 @@ void Init( )
 	poly.addPolyhedron("TPr", new TPrism());
 	poly.setEscalation("TPr", 1.5, 1.5, 1.5);
 	poly.setTranslation("TPr", 0, 2.0, 0);
+
+	//sun
+	objs.push_back(new CelestialObject( ));
+	objs.back()->setBody( new Cube() );
+	objs.back()->setBdEscl(1, 1, 1);
+	objs.back()->setPath(std::vector<Point> (1, Point(0,0,0)));
+	objs.back()->setCenter(Point(0, 0, 0));
+	
+	//planet 1
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Tetrahedron() );
+	objs.back()->setBdEscl(0.4, 0.4, 0.4);
+	objs.back()->setPath( objs.back()->ellipticOrbit(1,2,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[0]->addSatellite("1",objs[1]); 
+	//planet 2
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Cube() );
+	objs.back()->setBdEscl(0.3, 0.3, 0.3);
+	objs.back()->setPath( objs.back()->ellipticOrbit(2,1,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[0]->addSatellite("2",objs[2]);
+	
+	//planet 3
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new TPrism() );
+	objs.back()->setBdEscl(0.2, 0.2, 0.2);
+	objs.back()->setPath( objs.back()->ellipticOrbit(4,3,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[0]->addSatellite("3",objs[3]);
+	
+	//planet 4
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Octahedron() );
+	objs.back()->setBdEscl(0.5, 0.6, 0.7);
+	objs.back()->setPath( objs.back()->ellipticOrbit(3,3,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[0]->addSatellite("4",objs[4]);
+
+	//moon 1
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Tetrahedron() );
+	objs.back()->setBdEscl(0.05, 0.05, 0.05);
+	objs.back()->setPath( objs.back()->ellipticOrbit(.5,1,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[3]->addSatellite("5",objs[5]);
+	
+	//moon 2
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new TPrism() );
+	objs.back()->setBdEscl(0.02, 0.02, 0.02);
+	objs.back()->setPath( objs.back()->ellipticOrbit(1,.2,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[3]->addSatellite("6",objs[6]);
+	
+	//moon 3
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Cube() );
+	objs.back()->setBdEscl(0.05, 1, 0.01);
+	objs.back()->setPath( objs.back()->ellipticOrbit(.5,1,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[1]->addSatellite("7",objs[7]);
+	
+	//moon 4
+	objs.push_back(new CelestialObject());
+	objs.back()->setBody( new Octahedron() );
+	objs.back()->setBdEscl(0.1, 0.1, 0.1);
+	objs.back()->setPath( objs.back()->ellipticOrbit(.5,1,Vector(0,0,-1)) );
+	objs.back()->setCenter(Point(0, 0, 0));
+	objs[2]->addSatellite("8",objs[8]);
+	
+//CelObj.ellipticOrbit(1,2,Vector(0,0,-1))
+
+
 }
 
 // -------------------------------------------------------------------------
@@ -80,15 +164,14 @@ void DisplayCbk( )
 	
 	// Camara
 	glLoadIdentity( );
-	gluLookAt( 0, 0, 10, 0, 0, 0, 0, 1, 0 );
+	gluLookAt( 0, 0, 15, 0, 0, 0, 0, 1, 0 );
 	
 	glPushMatrix();
 	
-	//~ glPopMatrix();
-	
-	poly.renderAll();
 
-	// Finish
+	//for(auto it: objs)
+    objs[0]->renderCO();
+	
 	glPopMatrix();
 	glutSwapBuffers( );
 }

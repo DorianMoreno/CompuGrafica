@@ -9,6 +9,8 @@ struct Point{
 	
 	Point();
 	Point(const float &x, const float &y, const float &z);
+//	Point(Quaternion cuat);
+	float operator()(const int &coord); //int coord in {0,1,2}
 };
 
 struct Color{
@@ -29,8 +31,13 @@ struct Vector{
 	Vector(const Vector &v);
 	Vector(const float &x, const float &y, const float &z);
 	
+
 	void normalize();
 	void setVector(const float &x, const float &y, const float &z);
+
+	float dot(const Vector vec);
+	Vector unitcross(const Vector vec);
+	bool operator==(const Vector &vec);
 };
 
 struct Quaternion{
@@ -111,7 +118,7 @@ class TPrism: public Polyhedron{
 
 // -------------------------------------------------------------------------
 
-class Polyhedra{
+class Polyhedra{ //perhaps this should be CelestialObject?
 	private:
 		std::unordered_map<std::string, Polyhedron*> poly;
 	public:
@@ -139,6 +146,49 @@ class Polyhedra{
 		virtual ~Polyhedra();
 };
 
+
+class CelestialObject{
+	private:
+	std::unordered_map<std::string,CelestialObject*> Satellites; //celestial
+
+	Polyhedron* CelestialBody; //
+	Point center;	
+	std::vector<Point> path; //orbit-points relative to origin
+	/*
+	float T,ds; (as in period and speed)
+	 */
+
+	public:
+
+	CelestialObject();
+	CelestialObject(Polyhedron *cBody, float cx , float cy , float cz);
+	CelestialObject(Polyhedron *cBody, std::vector<Point> path);
+
+	void addSatellite(std::string name, CelestialObject *CelObjct);
+	void renderCO();
+	//renders body, path, updates Satellite centers and calls Sat.render
+	
+
+	//body funcs
+	void setBody(Polyhedron* pol);
+	void setBdEscl(const float &sx, const float &sy, const float &sz);
+	void setBdTrns(const float &tx, const float &ty, const float &tz);
+	void setCenter(const Point center);
+	void setPath(const std::vector<Point> &path);//path centered at origin
+	void renderPath();//translates path-points by center->paints
+	std::vector<Point> ellipticOrbit(const float &w,const float &h,const Vector normv,const int &samples = 1200 ); //normv defines ellipse plane; w = h -> circle
+	
+	void renderBody();
+
+	// satellite funcs
+	void setSatCenter(Point);
+
+
+
+
+
+
+};
 
 #include "polyhedra.hxx"
 
