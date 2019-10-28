@@ -27,7 +27,7 @@ Camera myCamera;
 Grid* myGrid;
 std::chrono::time_point< std::chrono::high_resolution_clock > lastTime; //last fps report
 ulong frames;
-GLuint dispList;
+GLuint gridList;
 Snake* snk;
 
 //global vars (Camera, grid, snake, etc)
@@ -35,11 +35,11 @@ Snake* snk;
 //--------------------------------------------------------------------------
 
 //inits and destroyers
-int fpsHelper();
 void initWorld( int argc, char* argv[] );
 void destroyWorld();
 
 // -------------------------------------------------------------------------
+int fpsHelper();
 void displayCbk( );
 void idleCbk( );
 void resizeCbk( int w, int h );
@@ -72,14 +72,6 @@ int main( int argc, char* argv[] )
         //glutPassiveMotionFunc( mouseMoveCbk );
 		glutSetCursor( GLUT_CURSOR_CROSSHAIR );
 
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LESS);
-        glDepthRange(0.0f, 1.0f);
-
-        glEnable (GL_CULL_FACE);
-        glCullFace (GL_BACK);
-
 		glutMainLoop(  );
 
         destroyWorld();
@@ -93,6 +85,14 @@ int main( int argc, char* argv[] )
 }
 // -------------------------------------------------------------------------
 void initWorld( int argc, char* argv[] ){
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LESS);
+	glDepthRange(0.0f, 1.0f);
+
+	glEnable (GL_CULL_FACE);
+	glCullFace (GL_BACK);
 
 	float sectionNumber = 20;		//Number of sections on each side of the grid
 	float initialSpeed = 5;			//Initial speed of snake, sections per second
@@ -112,6 +112,13 @@ void initWorld( int argc, char* argv[] ){
     myCamera.move( Vector( 0, 0, 0 ) );
 	myCamera.lookAt( Vector( 0, 0, -10 ) );
 
+	gridList = glGenLists(1);
+	glNewList(gridList, GL_COMPILE);
+	{
+		myGrid->draw();
+	}
+	glEndList();
+
 	// Calculate frames
 	frames =0;
 	lastTime = std::chrono::high_resolution_clock::now();
@@ -121,6 +128,8 @@ void destroyWorld()
 {
 	if( myGrid != nullptr )
 		delete myGrid;
+	// if( snk != nullptr )
+	// 	delete snk;
 }
 
 //--------------------------------------------------------------------------
@@ -212,7 +221,7 @@ void displayCbk( )
 
 	myCamera.loadCameraMatrix( );
 
-	myGrid->draw();
+	glCallList(gridList);
 
 	glPushMatrix();
 	snk->update();
