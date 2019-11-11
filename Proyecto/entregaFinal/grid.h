@@ -12,8 +12,8 @@ public:
 	//! Memory management
 	//@{
 	Grid();
-	Grid(const int& boxNumber = 10, const float& boxSize = 1, const Vector& corner = Vector(0, 0, 0));
-	Grid(const int& boxNumber, const float& boxSize, const float& x, const float& y, const float& z);
+	Grid(const int& boxNumber = 10, const Vector& corner = Vector(0, 0, 0));
+	Grid(const int& boxNumber, const float& x, const float& y, const float& z);
 	virtual ~Grid();
 	//@}
 
@@ -34,17 +34,18 @@ public:
 	void setCorner(const Vector& corner);
 	void setCorner(const float& x, const float& y, const float& z);
 	void setBoxNumber(const int& boxNumber);
-	void setBoxSize(const float& boxSize);
 
 	Vector getCorner();
 	int getBoxNumber();
-	float getBoxSize();
 
-	//void drawInOpenGLContext(GLenum mode, Vector camera);
+	Vector getStartingPos();
+	Vector getStartingForward();
+	Vector getStartingUp();
+
+	void updatePosition(Vector& position, Vector& forward, Vector& up);
 
 private:
 	int boxNumber;
-	float boxSize;
 	Vector corner;
 
 	Mesh* edge;

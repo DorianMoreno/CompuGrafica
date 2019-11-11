@@ -6,115 +6,121 @@
 #include <GL/glu.h>
 #include <iostream>
 
+#define threshold 0.01
+
 Snake::
-Snake(int wS, float s){
+Snake(float initialSpeed, float speedIncrease, Vector initialPos, Vector initialForward, Vector initialUp){
 
-    tempquad = gluNewQuadric();
-    GLfloat tempradii = 2;
-
-    this->worldSize = wS;
-    this->speed = s;
-    this->lastPosTime = std::chrono::high_resolution_clock::now();
-    s_Position  = Vector( 0.5, 0.5, 0.5 );
-    s_Forward   = Vector( 0 , 0 , -1 );
-    s_Up        = Vector( 0 , 1 );
-    s_Right     = s_Forward*s_Up;
+    this->s_speed         = initialSpeed;
+    this->s_SpeedIncrease = speedIncrease;
+    this->s_Size          = 1;
+    this->s_Position      = initialPos;
+    this->s_Forward       = initialForward;
+    this->s_Up            = initialUp;
+    this->s_Right         = s_Forward*s_Up;
+    this->s_Head          = new SnakeBlock(initialPos);
+    this->s_Grow          = false;
+    this->s_HeadPos       = initialPos - Vector(0.5, 0.5, 0.5);
+    this->lastPosTime     = std::chrono::high_resolution_clock::now();
 }
 
-
-void Snake::
-update(){
-    float dx;
-    double dt =
-      std::chrono::duration_cast< std::chrono::milliseconds >(
-        std::chrono::high_resolution_clock::now( ) - this->lastPosTime
-        ).count( );
-    dt /= 1000; //from mill to sec
-    this->lastPosTime = std::chrono::high_resolution_clock::now();
-    s_Position += (s_Forward * speed * dt);
-
-    //if(pos > wS)-> wrap + add diff
-    for (int i = 0; i<3;++i){
-        // float temp = s_Position[i];
-        // temp-= worldSize/2.0;
-        s_Position[i] = fmod(worldSize + s_Position[i], worldSize);
-        // s_Position[i] += temp;
-
-      // if (abs(s_Position[ i ]) > worldSize)
-      // {
-      //     std::cout<<"from: "<<s_Position[i];
-      //     dx = abs(s_Position[ i ]) - (float)worldSize;
-      //     s_Position[ i ] *= -s_Position[ i ]/s_Position[ i ];
-      //
-      //     std::cout<<" to:: "<<s_Position[i]<<" dx: "<<dx<<std::endl;
-      //
-      // }
+Snake::
+~Snake()
+{
+    if(this->s_Head != nullptr){
+        delete(this->s_Head);
+        this->s_Head = nullptr;
     }
+}
 
-    // glPushMatrix();
-    // glColor3f(1,0,0);
-    // glTranslatef(s_Position[0],s_Position[1],s_Position[2]);
-    // gluSphere(tempquad,2,10,10);
-    // glPopMatrix();
+bool Snake::
+newHeadPos()
+{
+    Vector actualBox = this->s_Position;
+    actualBox[0] = (int)(actualBox[0]);
+    actualBox[1] = (int)(actualBox[1]);
+    actualBox[2] = (int)(actualBox[2]);
+    actualBox -= this->s_HeadPos;
 
- }
-
-Vector Snake::getPosition(){
-    return s_Position;
+    if(actualBox.getNorm() > threshold)
+        return true;
+    return false;
 }
 
 Vector Snake::
-rotate(char dir, float deg){
-    float o = deg * _PI_180;
+move()
+{
+    Vector actualBox = this->s_Position;
+    actualBox[0] = (int)(actualBox[0]);
+    actualBox[1] = (int)(actualBox[1]);
+    actualBox[2] = (int)(actualBox[2]);
 
-    this->s_Position[0] = (int)this->s_Position[0];
+    this->s_HeadPos = actualBox;
+    if(this->s_Grow){
+        this->s_Head->increaseSize(actualBox);
+        this->s_Grow = false;
+        return Vector(-1, -1, -1);
+    }
+    return this->s_Head->advance(actualBox);
+}
+
+Vector Snake::
+currentPos(){
+    float dx;
+    double dt =
+        std::chrono::duration_cast< std::chrono::milliseconds >(
+            std::chrono::high_resolution_clock::now( ) - this->lastPosTime
+        ).count( );
+    dt /= 1000; //from mill to sec
+    this->lastPosTime = std::chrono::high_resolution_clock::now();
+    this->s_Position += (this->s_Forward * this->s_speed * dt);
+    return this->s_Position;
+}
+
+Vector Snake::
+turn(const char& dir, const float& rollback, const float& nextBox){
+    this->s_Position += this->s_Forward*nextBox;
+    this->s_Position[0] = (int)(this->s_Position[0]);
     this->s_Position[0] += 0.5;
-    this->s_Position[1] = (int)this->s_Position[1];
+    this->s_Position[1] = (int)(this->s_Position[1]);
     this->s_Position[1] += 0.5;
-    this->s_Position[2] = (int)this->s_Position[2];
+    this->s_Position[2] = (int)(this->s_Position[2]);
     this->s_Position[2] += 0.5;
 
+    Vector copyForward = this->s_Forward;
     switch (dir)
     {
     case 'u':
-        this->s_Forward =
-          ( this->s_Forward * std::cos( o ) ) +
-          ( this->s_Up * std::sin( o ) );
-        this->s_Forward.normalize( );
+        this->s_Forward = this->s_Up;
 
-        this->s_Up = ( this->s_Forward * this->s_Right ) * -1.0;
-        return  this->s_Forward*this->s_Up;
+        this->s_Up = copyForward * -1.0;
+        this->s_Position += this->s_Forward*0.5;
+        this->s_Position += this->s_Forward*-rollback;
+        return this->s_Right;
+
     case 'd':
-        o*=-1;
-        this->s_Forward =
-          ( this->s_Forward * std::cos( o ) ) +
-          ( this->s_Up * std::sin( o ) );
-        this->s_Forward.normalize( );
+        this->s_Forward = this->s_Up * -1.0;
 
-        this->s_Up = ( this->s_Forward * this->s_Right ) * -1.0;
-        return this->s_Up*this->s_Forward;
-        break;
+        this->s_Up = copyForward;
+        this->s_Position += this->s_Forward*0.5;
+        this->s_Position += this->s_Forward*-rollback;
+        return this->s_Right * -1.0;
 
     case 'r':
-        o*=-1;
-        this->s_Forward =
-          ( this->s_Forward * std::cos( o ) ) -
-          ( this->s_Right * std::sin( o ) );
-        this->s_Forward.normalize( );
+        this->s_Forward = this->s_Right;
 
-        this->s_Right = this->s_Forward * this->s_Up;
-        return this->s_Forward*this->s_Right;
+        this->s_Right = copyForward * -1.0;
+        this->s_Position += this->s_Forward*0.5;
+        this->s_Position += this->s_Forward*-rollback;
+        return this->s_Up * -1.0;
 
     case 'l':
+        this->s_Forward = this->s_Right * -1.0;
 
-        this->s_Forward =
-          ( this->s_Forward * std::cos( o ) ) -
-          ( this->s_Right * std::sin( o ) );
-        this->s_Forward.normalize( );
-
-        this->s_Right = this->s_Forward * this->s_Up;
-        return this->s_Right*this->s_Forward;
-
+        this->s_Right = copyForward;
+        this->s_Position += this->s_Forward*0.5;
+        this->s_Position += this->s_Forward*-rollback;
+        return this->s_Up;
 
     default:
         return Vector(0, 0, 0);
@@ -124,22 +130,99 @@ rotate(char dir, float deg){
 
 void Snake::
 setSpeed(float s){
-    this->speed = s;
+    this->s_speed = s;
 }
 
 float Snake::
 getSpeed(){
-    return this->speed;
+    return this->s_speed;
 }
 
 void Snake::
 setForward(const Vector& forward){
     this->s_Forward = forward;
+    this->s_Right = this->s_Forward*this->s_Up;
 }
 
 Vector Snake::
 getForward(){
     return this->s_Forward;
+}
+
+void Snake::
+setUp(const Vector& up){
+    this->s_Up = up;
+    this->s_Right = this->s_Forward*this->s_Up;
+}
+
+Vector Snake::
+getUp(){
+    return this->s_Up;
+}
+
+void Snake::
+setPosition(const Vector& position){
+    this->s_Position = position;
+}
+
+Vector Snake::
+getPosition(){
+    return this->s_Position;
+}
+
+Vector Snake::
+getRight(){
+    return this->s_Right;
+}
+
+Vector Snake::
+getHeadPos(){
+    return this->s_HeadPos;
+}
+
+Vector Snake::
+update(const Vector& position, const Vector& forward, const Vector& up, std::map<Vector, int>& blocks)
+{
+    this->s_Position    = position;
+    this->s_Forward     = forward;
+    this->s_Up          = up;
+
+    if(this->newHeadPos() == true){
+        if(this->s_Size > 1)
+            blocks[this->s_HeadPos] = 0;
+        Vector toRemove = this->move();
+        if(toRemove[0] != -1.0)
+            blocks.erase(toRemove);
+    }
+    this->s_Head->drawHead();
+}
+
+void Snake::
+increaseSize()
+{
+    if(!this->s_Grow){
+        this->s_Size++;
+        this->s_speed = std::min(this->s_SpeedIncrease + this->s_speed, 10.0f);
+    }
+    this->s_Grow = true;
+}
+
+void Snake::
+reset(float initialSpeed, Vector initialPos, Vector initialForward, Vector initialUp)
+{
+    if(this->s_Head != nullptr)
+        delete this->s_Head;
+
+    this->s_speed       = initialSpeed;
+    this->s_Size        = 1;
+    this->s_Position    = initialPos;
+    this->s_Forward     = initialForward;
+    this->s_Up          = initialUp;
+    this->s_Right       = s_Forward*s_Up;
+    this->s_Head        = new SnakeBlock(initialPos);
+    this->s_Grow        = false;
+    this->s_HeadPos     = initialPos - Vector(0.5, 0.5, 0.5);
+    this->lastPosTime   = std::chrono::high_resolution_clock::now();
 }
 
 #endif // __SNAKE__HXX__

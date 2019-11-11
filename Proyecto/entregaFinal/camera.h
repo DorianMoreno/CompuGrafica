@@ -1,8 +1,5 @@
-// -------------------------------------------------------------------------
-// @author Leonardo Florez-Valencia (florez-l@javeriana.edu.co)
-// -------------------------------------------------------------------------
-#ifndef __Camera__h__
-#define __Camera__h__
+#ifndef __CAMERA__H__
+#define __CAMERA__H__
 
 #include <chrono>
 #include "vector.h"
@@ -13,29 +10,32 @@
 class Camera
 {
 public:
-  //! Memory management
-  //@{
-  Camera( );
-  virtual ~Camera( );
-  //@}
+    //! Memory management
+    //@{
+    Camera( );
+    virtual ~Camera( );
+    //@}
 
-  void move( const Vector& dir );
-  void lookAt( Vector pnt );
-  void rotV( Vector forward, const float& angle );
-  void rotH( Vector forward, const float& angle );
-  void rotate( const Vector& axis, const float& angle );
+    void move( const Vector& dir );
+    void lookAt( Vector pnt );
+    void rotV( Vector forward, const float& angle, const float& camLimit = 50 );
+    void rotH( Vector forward, const float& angle, const float& camLimit = 50);
+    void rotate( const Vector& axis, const float& angle );
 
-  void setPosition( const Vector& position);
+    void setPosition( const Vector& position);
+    void setFocus( const Vector& forward);
+    void setUpVector( const Vector& up);
 
-  void loadCameraMatrix( );
+    void loadCameraMatrix( );
 
-  void setFOV( float a );
-  void setPlanes( float n, float f );
-  void setWindow( int w, int h );
-  void loadProjectionMatrix( );
+    void setFOV( float a );
+    void setPlanes( float n, float f );
+    void setWindow( int w, int h );
+    void loadProjectionMatrix( );
 
-  void turn( Vector axis, const float& turnTime );
-  bool isTurning();
+    void turn( Vector axis, const float& turnTime );
+    bool isTurning();
+    void setAnimating(const bool& animating);
 
 protected:
     float m_FOV;
@@ -60,6 +60,6 @@ protected:
 
 #include "camera.hxx"
 
-#endif // __Camera__h__
+#endif // __CAMERA__H__
 
-// eof - Camera.h
+// eof - camera.h

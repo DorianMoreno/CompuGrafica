@@ -22,7 +22,6 @@
 //------------------------------------------------------------------------------
 Grid::Grid():
 	boxNumber(0),
-	boxSize(1),
 	corner(false),
 	edge(nullptr),
 	grid(nullptr)
@@ -30,30 +29,26 @@ Grid::Grid():
 
 }
 
-Grid::Grid(const int& boxNumber, const float& boxSize, const Vector& corner):
+Grid::Grid(const int& boxNumber, const Vector& corner):
 	boxNumber(0),
-	boxSize(1),
 	corner(false),
 	edge(nullptr),
 	grid(nullptr)
 {
 	this->boxNumber = boxNumber;
-	this->boxSize = boxSize;
 	this->corner = corner;
 
 	this->_createEdge();
 	this->_createGrid();
 }
 
-Grid::Grid(const int& boxNumber, const float& boxSize, const float& x, const float& y, const float& z):
+Grid::Grid(const int& boxNumber, const float& x, const float& y, const float& z):
 	boxNumber(0),
-	boxSize(1),
 	corner(false),
 	edge(nullptr),
 	grid(nullptr)
 {
 	this->boxNumber = boxNumber;
-	this->boxSize = boxSize;
 	this->corner = Vector(x, y, z);
 
 	this->_createEdge();
@@ -102,7 +97,7 @@ void Grid::_createEdge(){
 	this->edge->addFace( face5 );
 	this->edge->addFace( face6 );
 
-	this->edge->setColor(0.0, 0.50980392156, 0.78431372549);
+	this->edge->setColor(1.0, 1.0, 1.0);
 }
 
 void Grid::_createGrid(){
@@ -186,11 +181,11 @@ void Grid::drawGridInCorner(const float& x, const float& y, const float& z){
 
 void Grid::drawInCorner(const Vector& corner){
 	float halfSide = ((float)this->boxNumber)/2.0;
-	halfSide*=this->boxSize;
+
 	glPushMatrix();
 
 	glTranslatef(halfSide + this->corner[0], halfSide + this->corner[1], halfSide + this->corner[2]);
-	glScalef(this->boxNumber*this->boxSize, this->boxNumber*this->boxSize, this->boxNumber*this->boxSize);
+	glScalef(this->boxNumber, this->boxNumber, this->boxNumber);
 	this->edge->drawInOpenGLContext(GL_LINE_LOOP);
 	this->grid->drawInOpenGLContext(GL_LINE_LOOP);
 
@@ -199,11 +194,11 @@ void Grid::drawInCorner(const Vector& corner){
 
 void Grid::drawEdgeInCorner(const Vector& corner){
 	float halfSide = ((float)this->boxNumber)/2.0;
-	halfSide*=this->boxSize;
+
 	glPushMatrix();
 
 	glTranslatef(halfSide + this->corner[0], halfSide + this->corner[1], halfSide + this->corner[2]);
-	glScalef(this->boxNumber*this->boxSize, this->boxNumber*this->boxSize, this->boxNumber*this->boxSize);
+	glScalef(this->boxNumber, this->boxNumber, this->boxNumber);
 	this->edge->drawInOpenGLContext(GL_LINE_LOOP);
 
 	glPopMatrix();
@@ -211,12 +206,11 @@ void Grid::drawEdgeInCorner(const Vector& corner){
 
 void Grid::drawGridInCorner(const Vector& corner){
 	float halfSide = ((float)this->boxNumber)/2.0;
-	halfSide*=this->boxSize;
 
 	glPushMatrix();
 
 	glTranslatef(halfSide + this->corner[0], halfSide + this->corner[1], halfSide + this->corner[2]);
-	glScalef(this->boxNumber*this->boxSize, this->boxNumber*this->boxSize, this->boxNumber*this->boxSize);
+	glScalef(this->boxNumber, this->boxNumber, this->boxNumber);
 	this->grid->drawInOpenGLContext(GL_LINE_LOOP);
 
 	glPopMatrix();
@@ -244,10 +238,6 @@ void Grid::setBoxNumber(const int& boxNumber){
 	this->_createGrid();
 }
 
-void Grid::setBoxSize(const float& boxSize){
-	this->boxSize = boxSize;
-}
-
 Vector Grid::getCorner(){
 	return this->corner;
 }
@@ -256,8 +246,22 @@ int Grid::getBoxNumber(){
 	return this->boxNumber;
 }
 
-float Grid::getBoxSize(){
-	return this->boxSize;
+Vector Grid::getStartingPos(){
+	return Vector(0.5, 0.5, 0.5);
+}
+
+Vector Grid::getStartingForward(){
+	return Vector(0, 0, -1);
+}
+
+Vector Grid::getStartingUp(){
+	return Vector(0, 1, 0);
+}
+
+void Grid::updatePosition(Vector& position, Vector& forward, Vector& up){
+	position[0] = fmod(position[0] + this->boxNumber, this->boxNumber);
+	position[1] = fmod(position[1] + this->boxNumber, this->boxNumber);
+	position[2] = fmod(position[2] + this->boxNumber, this->boxNumber);
 }
 
 #endif //__GRID__HXX__

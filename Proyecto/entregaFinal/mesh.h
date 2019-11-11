@@ -1,6 +1,7 @@
 // -------------------------------------------------------------------------
 // @author Leonardo Florez-Valencia (florez-l@javeriana.edu.co)
 // -------------------------------------------------------------------------
+
 #ifndef __MESH__H__
 #define __MESH__H__
 
@@ -44,7 +45,6 @@ public:
   //! Memory management
   //@{
   Mesh( );
-  Mesh( const float &r, const float &g, const float &b);
   Mesh( const std::string& fname );
   virtual ~Mesh( );
   //@}
@@ -62,6 +62,17 @@ public:
   unsigned long addPoint( float* p );
   unsigned long addPoint( double* p );
 
+  unsigned long getNumberOfNormals( ) const;
+  float* getNormal( unsigned long i );
+  const float* getNormal( unsigned long i ) const;
+
+
+  unsigned long addNormal( float x, float y, float z );
+  unsigned long addNormal( double x, double y, double z );
+  unsigned long addNormal( float* p );
+  unsigned long addNormal( double* p );
+
+
   void setPoint( unsigned long i, float x, float y, float z );
   void setPoint( unsigned long i, double x, double y, double z );
   void setPoint( unsigned long i, float* p );
@@ -72,6 +83,12 @@ public:
   //@{
   template< class _TContainer >
   void addFace( const _TContainer& f );
+
+  template< class _TContainer >
+  void addFaceNormal( const _TContainer& n );
+
+  template< class _TContainer >
+  void addTexture( const _TContainer& t );
 
   template< class _TIterator >
   inline void addFace( _TIterator b, _TIterator e )
@@ -130,10 +147,14 @@ protected:
   //@}
 
 protected:
-  std::vector< float >         m_Geometry;
-  std::vector< unsigned long > m_Topology;
-  float                        m_Color[ 3 ];
+  std::vector< float >          m_Tuple; //(n,n+1,n+2)
+  std::vector< float >          m_Normal;
+  std::vector< unsigned long >  m_Topology; //(v1,v2,..,vn)
+  std::vector< unsigned long >  m_TopologyNormal; //(v1,v2,..,vn)
+  std::vector< unsigned long >  m_Texture;
+  float                         m_Color[ 3 ]; //r,g,b
 };
+
 
 #include "mesh.hxx"
 

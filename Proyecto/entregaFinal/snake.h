@@ -3,15 +3,19 @@
 
 
 #include <chrono>
+#include <map>
 #include "camera.h"
 #include "vector.h"
+#include "block.h"
 #include <GL/glu.h>
 
 class Snake
 {
 private:
     // snake reqs:speed; tail
-    float speed; //(unds/sec)
+    float s_speed; //(unds/sec)
+    float s_SpeedIncrease;
+    int s_Size;
     //snake upd neds to know how much time
     std::chrono::time_point<std::chrono::high_resolution_clock> lastPosTime; //time when last pos
 
@@ -22,34 +26,38 @@ private:
     Vector s_Up;
     Vector s_Right;
 
-    int worldSize;
+    bool s_Grow;
+    SnakeBlock* s_Head;
+    Vector s_HeadPos;
+
 //nop    Vector s_rots;
 
-
-
-
-
 public:
-GLUquadric* tempquad;
-     Snake(/* args */);
-     Snake(int worldSize= 30, float speed = 1);
+    Snake(/* args */);
+    Snake(float initialSpeed, float speedIncrease, Vector initialPos, Vector initialForward, Vector initialUp);
 
-    ~ Snake();
+    virtual ~Snake();
 
     float getSpeed();
     Vector getPosition();
     Vector getForward();
     Vector getUp();
     Vector getRight();
+    Vector getHeadPos();
 
-    void setPosition();
+    void setPosition(const Vector& position);
     void setForward(const Vector& forward);
-    void setUp();
-    void setRight();
+    void setUp(const Vector& up);
 
     void setSpeed(float s);
-    void update();
+    bool newHeadPos();
+    Vector move();
+    Vector currentPos();
+    Vector update(const Vector& position, const Vector& forward, const Vector& up, std::map<Vector, int>& blocks);
     Vector rotate(char direction, float degree = 90);
+    Vector turn(const char& direction, const float& rollback = 0.5, const float& nextBox = 0.0);
+    void reset(float initialSpeed, Vector initialPos, Vector initialForward, Vector initialUp);
+    void increaseSize();
 
 };
 

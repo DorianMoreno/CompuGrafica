@@ -1,14 +1,11 @@
-// -------------------------------------------------------------------------
-// @author Leonardo Florez-Valencia (florez-l@javeriana.edu.co)
-// -------------------------------------------------------------------------
+#ifndef __CAMERA__HXX__
+#define __CAMERA__HXX__
 
 #include "camera.h"
 #include "quaternion.h"
 #include "vector.h"
 #include <cmath>
 #include <GL/glu.h>
-
-#define _CAM_LIMIT 50
 
 // -------------------------------------------------------------------------
 Camera::
@@ -23,6 +20,8 @@ Camera( )
   this->m_Focus = Quaternion(Vector(0, 0, 0), 0);
   this->m_UpVector = Quaternion(Vector(1, 0, 0), 90);
   this->m_UpVector.normalize();
+
+  this->m_Animating = false;
 }
 
 // -------------------------------------------------------------------------
@@ -50,7 +49,7 @@ lookAt( Vector pnt )
 
 // -------------------------------------------------------------------------
 void Camera::
-rotV( Vector forward, const float& angle )
+rotV( Vector forward, const float& angle, const float& camLimit)
 {
     Vector prevFocus = this->m_Focus.rotatePoint(this->m_Basic);
     Vector axis = prevFocus*this->m_UpVector.rotatePoint(this->m_Basic);
@@ -61,20 +60,22 @@ rotV( Vector forward, const float& angle )
     this->m_Focus = newR*this->m_Focus;
     this->m_Focus.normalize();
 
-    Vector newFocus = this->m_Focus.rotatePoint(this->m_Basic);
-    float newAngle = acos(newFocus/forward)/_PI_180;
-    if(newAngle > _CAM_LIMIT){
-        Vector newAxis = newFocus*forward;
-        newR = Quaternion(newAxis, newAngle-_CAM_LIMIT);
-        newR.normalize();
-        this->m_Focus = newR*this->m_Focus;
-        this->m_Focus.normalize();
+    if(this->m_Animating == false){
+        Vector newFocus = this->m_Focus.rotatePoint(this->m_Basic);
+        float newAngle = acos(newFocus/forward)/_PI_180;
+        if(newAngle > camLimit){
+            Vector newAxis = newFocus*forward;
+            newR = Quaternion(newAxis, newAngle-camLimit);
+            newR.normalize();
+            this->m_Focus = newR*this->m_Focus;
+            this->m_Focus.normalize();
+        }
     }
 }
 
 // -------------------------------------------------------------------------
 void Camera::
-rotH( Vector forward, const float& angle )
+rotH( Vector forward, const float& angle, const float& camLimit)
 {
     Vector axis = this->m_UpVector.rotatePoint(this->m_Basic);
     axis.normalize();
@@ -84,14 +85,16 @@ rotH( Vector forward, const float& angle )
     this->m_Focus = newR*this->m_Focus;
     this->m_Focus.normalize();
 
-    Vector newFocus = this->m_Focus.rotatePoint(this->m_Basic);
-    float newAngle = acos(newFocus/forward)/_PI_180;
-    if(newAngle > _CAM_LIMIT){
-        Vector newAxis = newFocus*forward;
-        newR = Quaternion(newAxis, newAngle-_CAM_LIMIT);
-        newR.normalize();
-        this->m_Focus = newR*this->m_Focus;
-        this->m_Focus.normalize();
+    if(this->m_Animating == false){
+        Vector newFocus = this->m_Focus.rotatePoint(this->m_Basic);
+        float newAngle = acos(newFocus/forward)/_PI_180;
+        if(newAngle > camLimit){
+            Vector newAxis = newFocus*forward;
+            newR = Quaternion(newAxis, newAngle-camLimit);
+            newR.normalize();
+            this->m_Focus = newR*this->m_Focus;
+            this->m_Focus.normalize();
+        }
     }
 }
 
@@ -113,6 +116,22 @@ void Camera::
 setPosition( const Vector& position )
 {
     this->m_Position = position;
+}
+
+// -------------------------------------------------------------------------
+void Camera::
+setFocus( const Vector& focus )
+{
+    this->m_Focus = Quaternion(this->m_Basic*focus, acos( this->m_Basic / focus )/_PI_180);
+    this->m_Focus.normalize();
+}
+
+// -------------------------------------------------------------------------
+void Camera::
+setUpVector( const Vector& up )
+{
+    this->m_UpVector = Quaternion(this->m_Basic*up, acos( this->m_Basic / up )/_PI_180);
+    this->m_UpVector.normalize();
 }
 
 // -------------------------------------------------------------------------
@@ -200,4 +219,12 @@ isTurning( )
     return this->m_Animating;
 }
 
-// eof - Camera.cxx
+// -------------------------------------------------------------------------
+void Camera::
+setAnimating( const bool& animating)
+{
+    this->m_Animating = animating;
+}
+
+#endif //__CAMERA__HXX__
+// eof - camera.hxx

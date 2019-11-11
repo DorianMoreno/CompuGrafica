@@ -116,6 +116,26 @@ operator-=( const Vector& r )
 }
 
 // -------------------------------------------------------------------------
+bool Vector::
+operator<( const Vector& r ) const
+{
+    if(this->m_V[0] == r.m_V[0])
+        if(this->m_V[1] == r.m_V[1])
+            return this->m_V[2] < r.m_V[2];
+        else
+            return this->m_V[1] < r.m_V[1];
+    else
+        return this->m_V[0] < r.m_V[0];
+}
+
+// -------------------------------------------------------------------------
+bool Vector::
+operator==( const Vector& r ) const
+{
+    return this->m_V[0] == r.m_V[0] && this->m_V[1] == r.m_V[1] && this->m_V[2] == r.m_V[2];
+}
+
+// -------------------------------------------------------------------------
 float Vector::
 operator/( const Vector& r ) const
 {
